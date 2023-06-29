@@ -1,12 +1,12 @@
 import Parser from "rss-parser";
 
-type Feed = {
+export type Feed = {
     title?: string;
     url: string;
     entries: Entry[];
 }
 
-type Entry = Partial<{
+export type Entry = Partial<{
     title: string;
     creator: string;
     categories: string[];

@@ -21,7 +21,7 @@ export class EntryReadUI {
         console.clear();
         this.print();
 
-        //show cursor
+        // Show cursor
         process.stdout.write('\x1B[?25h');
     }
 
@@ -36,7 +36,7 @@ export class EntryReadUI {
         header += this.entry.categories?.join(', ') ?? '';
         console.log(header + '\n');
 
-        if (this.entry.description) console.log(cliHtml(this.entry.description));
+        if (this.entry.content) console.log(cliHtml(this.entry.content));
         else console.log('No content found for this entry.');
-    }
+    }    
 }

@@ -1,6 +1,7 @@
 import { Controller } from '../controller.js';
 import type { Entry } from '../rss.service.js';
 import { getBorderCharacters, table } from 'table';
+import { EntryReadUI } from './entry-read.ui.js';
 
 export class EntryListUI {
     private entries: Entry[];
@@ -36,8 +37,8 @@ export class EntryListUI {
                 this.move('down');
             })
             .on('return', () => {
-                console.log('TODO navigate to entry UI');
                 this.controller.clear(); // Clear commands so the entry UI can add its own.
+                new EntryReadUI(this.entries[this.selectedIndex * this.currentPage]).load();
             })
             .build();
 

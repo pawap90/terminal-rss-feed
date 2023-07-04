@@ -12,6 +12,7 @@ export type Entry = Partial<{
     categories: string[];
     date: Date;
     url: string;
+    description: string;
 }>
 
 const parser: Parser = new Parser();
@@ -27,7 +28,8 @@ export async function getFeed(url: string): Promise<Feed> {
                 creator: item.creator,
                 categories: item.categories,
                 date: item.isoDate ? new Date(item.isoDate) : undefined,
-                url: item.link
+                url: item.link,
+                description: item.content
             }
         })
     };

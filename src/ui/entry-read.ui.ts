@@ -1,5 +1,6 @@
-import { Controller } from "../controller.js";
-import { Entry } from "../rss.service.js";
+import { Controller } from '../controller.js';
+import { Entry } from '../rss.service.js';
+import cliHtml from 'cli-html';
 
 export class EntryReadUI {
     private readonly controller = new Controller();
@@ -35,6 +36,7 @@ export class EntryReadUI {
         header += this.entry.categories?.join(', ') ?? '';
         console.log(header + '\n');
 
-        console.log(this.entry.description);
+        if (this.entry.description) console.log(cliHtml(this.entry.description));
+        else console.log('No content found for this entry.');
     }
 }

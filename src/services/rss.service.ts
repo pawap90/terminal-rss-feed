@@ -44,7 +44,8 @@ export async function getFeed(url: string): Promise<Feed> {
         })
     };
 
-    await cacheService.set(CACHE_KEY, feed);
+    // Cache for 24 hours.
+    await cacheService.set(CACHE_KEY, feed, 60 * 60 * 24);
 
     return feed;
 }

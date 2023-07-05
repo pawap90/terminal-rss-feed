@@ -2,6 +2,7 @@ import { Controller } from '../controller.js';
 import { getFeed, type Entry } from '../services/rss.service.js';
 import { getBorderCharacters, table } from 'table';
 import { EntryReadUI } from './entry-read.ui.js';
+import { color } from './color.js';
 
 export class EntryListUI {
     private entries: Entry[] = [];
@@ -68,7 +69,7 @@ export class EntryListUI {
         console.log(
             table(tableData, {
                 border: getBorderCharacters('norc'),
-                header: { content: 'MY FEED' },
+                header: { content: color.pink.inverse(' MY FEED ') },
                 drawHorizontalLine: () => true,
                 drawVerticalLine: () => false
             })
@@ -79,10 +80,11 @@ export class EntryListUI {
 
     private entryToString(entry: Entry): string {
         let entryRow =
-            this.sliceTextToFit(entry.title?.toUpperCase() ?? 'TITLE NOT FOUND') + '\n\n';
-        entryRow += this.sliceTextToFit(this.formatDate(entry.date)) + ' | ';
-        entryRow += this.sliceTextToFit(entry.creator ?? '') + '\n';
-        entryRow += this.sliceTextToFit(entry.categories?.join(', ') ?? '');
+            color.yellow(this.sliceTextToFit(entry.title?.toUpperCase() ?? 'TITLE NOT FOUND')) +
+            '\n\n';
+        entryRow += color.pink(this.sliceTextToFit(this.formatDate(entry.date))) + ' | ';
+        entryRow += color.pink.italic(this.sliceTextToFit(entry.creator ?? '')) + '\n';
+        entryRow += color.green(this.sliceTextToFit(entry.categories?.join(', ') ?? ''));
 
         return `\n${entryRow}\n`;
     }

@@ -1,6 +1,7 @@
 import { Controller } from '../controller.js';
-import { Entry } from '../rss.service.js';
+import { Entry } from '../services/rss.service.js';
 import cliHtml from 'cli-html';
+import { EntryListUI } from './entry-list.ui.js';
 
 export class EntryReadUI {
     private readonly controller = new Controller();
@@ -10,11 +11,11 @@ export class EntryReadUI {
         this.entry = entry;
     }
 
-    load() {
+    async load() {
         this.controller
-            .on('backspace', () => {
+            .on('backspace', async () => {
                 this.controller.clear(); // Clear commands so the entry UI can add its own.
-                console.log('TODO - Go back to entry list');
+                await new EntryListUI().load();
             })
             .build();
 

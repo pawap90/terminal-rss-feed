@@ -1,10 +1,10 @@
 import { Controller } from '../controller.js';
-import type { Entry } from '../rss.service.js';
+import { getFeed, type Entry } from '../services/rss.service.js';
 import { getBorderCharacters, table } from 'table';
 import { EntryReadUI } from './entry-read.ui.js';
 
 export class EntryListUI {
-    private entries: Entry[];
+    private entries: Entry[] = [];
     private selectedIndex = 0;
     private currentPage = 0;
 
@@ -17,12 +17,16 @@ export class EntryListUI {
     private readonly entryTableFooterHeight = 3;
     private readonly controller = new Controller();
 
-    constructor(entries: Entry[]) {
-        this.entries = entries;
+    constructor() {
         this.screenSize = { columns: process.stdout.columns, rows: process.stdout.rows };
     }
 
-    load() {
+    async load(): Promise<void> {
+        // TODO: RSS CRUDL
+        //const rssUrl = 'https://blog.paulasantamaria.com/rss.xml'; // Hashnode
+        const rssUrl = 'https://dev.to/feed/paulasantamaria'; // Dev.to
+        this.entries = (await getFeed(rssUrl)).entries;
+
         this.entriesPerPage = Math.floor(
             (this.screenSize.rows - (this.entryTableHeaderHeight + this.entryTableFooterHeight)) /
                 this.entryRowHeight

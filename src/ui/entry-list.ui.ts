@@ -80,7 +80,7 @@ export class EntryListUI {
     private entryToString(entry: Entry): string {
         let entryRow =
             this.sliceTextToFit(entry.title?.toUpperCase() ?? 'TITLE NOT FOUND') + '\n\n';
-        entryRow += this.sliceTextToFit(entry.date?.toLocaleDateString() ?? '') + ' | ';
+        entryRow += this.sliceTextToFit(this.formatDate(entry.date)) + ' | ';
         entryRow += this.sliceTextToFit(entry.creator ?? '') + '\n';
         entryRow += this.sliceTextToFit(entry.categories?.join(', ') ?? '');
 
@@ -116,5 +116,9 @@ export class EntryListUI {
         }
 
         this.print();
+    }
+
+    private formatDate(date?: Date): string {
+        return date ? new Date(date).toLocaleDateString() : '';
     }
 }

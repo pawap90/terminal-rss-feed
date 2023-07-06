@@ -1,4 +1,4 @@
-import { Controller } from '../controller.js';
+import { controller } from '../controller.js';
 import { getFeed, type Entry } from '../services/rss.service.js';
 import { getBorderCharacters, table } from 'table';
 import { EntryReadUI } from './entry-read.ui.js';
@@ -16,7 +16,6 @@ export class EntryListUI {
     private readonly entryRowHeight = 7;
     private readonly entryTableHeaderHeight = 3;
     private readonly entryTableFooterHeight = 3;
-    private readonly controller = new Controller();
 
     constructor() {
         this.screenSize = { columns: process.stdout.columns, rows: process.stdout.rows };
@@ -34,16 +33,16 @@ export class EntryListUI {
         );
         this.totalPages = Math.ceil(this.entries.length / this.entriesPerPage);
 
-        this.controller
+        controller
             .on('up', () => {
                 this.move('up');
             })
             .on('down', () => {
                 this.move('down');
             })
-            .on('return', () => {
-                this.controller.clear(); // Clear commands so the entry UI can add its own.
-                new EntryReadUI(this.entries[this.selectedIndex * this.currentPage]).load();
+            .on('return', async () => {
+                controller.clear(); // Clear commands so the entry UI can add its own.
+                await new EntryReadUI(this.entries[this.selectedIndex * this.currentPage]).load();
             })
             .build();
 
@@ -92,6 +91,7 @@ export class EntryListUI {
     private printFooter() {
         let footer = `Page ${this.currentPage + 1} of ${this.totalPages}`;
         footer += ` | ${this.entries.length} entries`;
+        footer += ` | ${this.selectedIndex} selected`;
 
         console.log(footer);
     }

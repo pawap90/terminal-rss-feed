@@ -21,7 +21,7 @@ class Controller {
 
         process.stdin.setRawMode(true);
         
-        process.stdin.removeListener('keypress', this.keyPressHandler.bind(this));
+        process.stdin.removeAllListeners('keypress');
         process.stdin.on('keypress', this.keyPressHandler.bind(this));
     }
 
@@ -31,4 +31,5 @@ class Controller {
 }
 
 export const controller = new Controller();
+controller.build();
 

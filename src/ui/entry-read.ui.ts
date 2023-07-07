@@ -1,19 +1,16 @@
 import { controller } from '../controller.js';
 import { Entry } from '../services/rss.service.js';
 import { EntryListUI } from './entry-list.ui.js';
-import { color } from './color.js';
+import { color, theme } from './color.js';
 
 import { getBorderCharacters, table } from 'table';
-import blessed from 'blessed';
 import cliHtml from 'cli-html';
-const screen = blessed.screen({
-    smartCSR: true,
-    fullUnicode: true,
-});
+import { Scrollable } from './scrollable.js';
 
 export class EntryReadUI {
     private readonly entry: Entry;
     private readonly screenSize = { columns: 0, rows: 0 };
+    private scrollableContent?: Scrollable;
 
     constructor(entry: Entry) {
         this.entry = entry;
@@ -21,12 +18,17 @@ export class EntryReadUI {
     }
 
     async load() {
-        controller.on('backspace', async () => {
-            controller.clear(); // Clear commands so the entry UI can add its own.
-            await new EntryListUI().load();
-            screen.children[0].destroy();
-        })
-        .build(); 
+        this.scrollableContent = new Scrollable({
+            content: this.formatContent()
+        });
+
+        controller
+            .on('backspace', async () => {
+                controller.clear(); // Clear commands so the entry UI can add its own.
+                await new EntryListUI().load();
+            })
+            .on('up', () => this.scrollableContent?.scroll(-1))
+            .on('down', () => this.scrollableContent?.scroll(1));
 
         console.clear();
         this.print();
@@ -46,38 +48,24 @@ export class EntryReadUI {
             color.green(this.sliceTextToFit(this.entry.categories?.join(', ') ?? '')) + '\n';
         metadata += color.yellow(this.sliceTextToFit(this.entry.url ?? '')) + '\n';
 
-        console.log(
-            table([[metadata]], {
-                border: getBorderCharacters('norc'),
-                header: { content: header, alignment: 'center' },
-                drawHorizontalLine: () => true,
-                drawVerticalLine: () => false
+        const headerTable = table([[metadata]], {
+            border: getBorderCharacters('norc'),
+            columnDefault: { width: this.screenSize.columns - 2},
+            header: { content: header, alignment: 'center' },
+            drawHorizontalLine: () => true,
+            drawVerticalLine: () => false
+        });
+
+        console.log(headerTable);
+
+        const cursorY = headerTable.split('\n').length - 1;
+        this.scrollableContent
+            ?.setStart({ x: 0, y: cursorY })
+            .setContainer({
+                width: this.screenSize.columns - 2,
+                height: this.screenSize.rows - cursorY
             })
-        );
-
-        // Use blessed for better scrolling.
-        const box = blessed.box({
-            parent: screen,
-            padding: 0,
-            left: 'center',
-            top: 'top+8',
-            width: '100%',
-            height: '100%-8'
-        });
-
-        const content = blessed.text({
-            parent: box,
-            content: this.formatContent(),
-            top: 2,
-            scrollable: true,
-            keys: true,
-            vi: true,
-            alwaysScroll: true,
-            scrollbar: {}
-        });
-
-        content.focus();
-        screen.render();
+            .print();
     }
 
     private sliceTextToFit(text: string) {
@@ -93,6 +81,6 @@ export class EntryReadUI {
     private formatContent() {
         if (!this.entry.content) return '';
 
-        return cliHtml(this.entry.content?.replace('\n', ''));
+        return cliHtml(this.entry.content?.replace('\n', ''), theme, { enableWordWrap: false });
     }
 }

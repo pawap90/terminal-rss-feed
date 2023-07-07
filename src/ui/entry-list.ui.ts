@@ -42,9 +42,8 @@ export class EntryListUI {
             })
             .on('return', async () => {
                 controller.clear(); // Clear commands so the entry UI can add its own.
-                await new EntryReadUI(this.entries[this.selectedIndex * this.currentPage]).load();
-            })
-            .build();
+                await new EntryReadUI(this.entries[this.selectedIndex * (this.currentPage + 1)]).load();
+            });
 
         console.clear();
         this.print();

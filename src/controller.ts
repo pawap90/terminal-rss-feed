@@ -9,7 +9,7 @@ class Controller {
     }
 
     execute(key: string) {
-        this.commands.find(c => c.key == key)?.command();
+        this.commands.find((c) => c.key == key)?.command();
     }
 
     clear() {
@@ -20,16 +20,18 @@ class Controller {
         emitKeypressEvents(process.stdin);
 
         process.stdin.setRawMode(true);
-        
+
         process.stdin.removeAllListeners('keypress');
         process.stdin.on('keypress', this.keyPressHandler.bind(this));
     }
 
     private keyPressHandler(chunk: any, key: any) {
         this.execute(key.name);
+
+        // default commands
+        if ((key.name == 'c' && key.ctrl) || key.name == 'q') process.exit();
     }
 }
 
 export const controller = new Controller();
 controller.build();
-

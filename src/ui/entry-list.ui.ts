@@ -7,16 +7,15 @@ import { color } from './color.js';
 export class EntryListUI {
     private entries: Entry[] = [];
     private selectedIndex = 0;
-    private selectedEntryIndex = 0;
     private currentPage = 0;
 
     private totalPages = 0;
     private entriesPerPage = 0;
     private screenSize = { columns: 0, rows: 0 };
 
-    private readonly entryRowHeight = 7;
-    private readonly entryTableHeaderHeight = 3;
-    private readonly entryTableFooterHeight = 3;
+    private readonly ROW_HEIGHT = 7;
+    private readonly HEADER_HEIGHT = 3;
+    private readonly FOOTER_HEIGHT = 3;
 
     async load(): Promise<void> {
         this.screenSize = { columns: process.stdout.columns, rows: process.stdout.rows };
@@ -27,8 +26,7 @@ export class EntryListUI {
         this.entries = (await getFeed(rssUrl)).entries;
 
         this.entriesPerPage = Math.floor(
-            (this.screenSize.rows - (this.entryTableHeaderHeight + this.entryTableFooterHeight)) /
-                this.entryRowHeight
+            (this.screenSize.rows - (this.HEADER_HEIGHT + this.FOOTER_HEIGHT)) / this.ROW_HEIGHT
         );
         this.totalPages = Math.ceil(this.entries.length / this.entriesPerPage);
 
@@ -37,7 +35,9 @@ export class EntryListUI {
             .on('down', () => this.move('down'))
             .on('return', async () => {
                 controller.clear(); // Clear commands so the entry UI can add its own.
-                await new EntryReadUI(this.entries[this.selectedEntryIndex]).load();
+                const selectedEntryIndex =
+                    this.currentPage * this.entriesPerPage + this.selectedIndex;
+                await new EntryReadUI(this.entries[selectedEntryIndex]).load();
             })
             .on('r', () => this.load());
 
@@ -110,12 +110,20 @@ export class EntryListUI {
 
     private move(direction: 'up' | 'down') {
         if (direction == 'up') {
+            if (this.selectedIndex == 0 && this.currentPage == 0) return;
+
             this.selectedIndex--;
             if (this.selectedIndex < 0 && this.currentPage > 0) {
                 this.currentPage--;
                 this.selectedIndex = this.entriesPerPage - 1;
             }
         } else {
+            if (
+                this.selectedIndex == this.entriesPerPage - 1 &&
+                this.currentPage == this.totalPages - 1
+            )
+                return;
+
             this.selectedIndex++;
             if (this.selectedIndex >= this.entriesPerPage && this.currentPage < this.totalPages) {
                 this.selectedIndex = 0;
@@ -123,7 +131,6 @@ export class EntryListUI {
             }
         }
 
-        this.selectedEntryIndex = this.currentPage * this.entriesPerPage + this.selectedIndex;
         this.print();
     }
 

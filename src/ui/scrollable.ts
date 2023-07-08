@@ -1,9 +1,10 @@
-import wrapAnsi from 'wrap-ansi';
+import wrapAnsi, { type Options as WrapOptions } from 'wrap-ansi';
 
 type ScrollableOptions = {
     content?: string;
     start: { x: number; y: number };
     container: { width: number; height: number };
+    wrapOptions: WrapOptions;
 };
 
 export class Scrollable {
@@ -14,31 +15,48 @@ export class Scrollable {
     constructor(options: Partial<ScrollableOptions>) {
         this.options = {
             content: options.content,
-            start: options.start ?? { x: 0, y: 0 },
-            container: options.container ?? {
-                width: process.stdout.columns,
-                height: process.stdout.rows
+            start: {
+                x: options.start?.x ?? 0,
+                y: options.start?.y ?? 0
+            },
+            container: {
+                width: options.container?.width ?? process.stdout.columns,
+                height: options.container?.height ?? process.stdout.rows
+            },
+            wrapOptions: {
+                hard: options.wrapOptions?.hard ?? true,
+                wordWrap: options.wrapOptions?.wordWrap ?? true,
+                trim: options.wrapOptions?.trim ?? false
             }
         };
     }
 
     setContent(content: string): this {
         this.options.content = content;
+        this.resetLines();
         return this;
     }
 
     setStart(start: { x: number; y: number }): this {
         this.options.start = start;
+        this.resetLines();
         return this;
     }
 
     setContainer(container: { width: number; height: number }): this {
         this.options.container = container;
+        this.resetLines();
+        return this;
+    }
+
+    setWrapOptions(wrapOptions: WrapOptions): this {
+        this.options.wrapOptions = wrapOptions;
+        this.resetLines();
         return this;
     }
 
     print(): this {
-        if (this.lines) this.splitContentIntoLines();
+        if (this.lines.length == 0) this.splitContentIntoLines();
         const { x, y } = this.options.start;
         const { height } = this.options.container;
 
@@ -59,17 +77,22 @@ export class Scrollable {
             this.currentLine = this.lines.length - 1;
 
         this.currentLine += lines;
-        this.print();
         return this;
+    }
+
+    private resetLines(): void {
+        this.lines = [];
+        this.currentLine = 0;
     }
 
     private splitContentIntoLines(): void {
         if (!this.options.content) return;
 
-        const wrapped = wrapAnsi(this.options.content, this.options.container.width, {
-            hard: true,
-            wordWrap: true
-        });
+        const wrapped = wrapAnsi(
+            this.options.content,
+            this.options.container.width,
+            this.options.wrapOptions
+        );
         this.lines = wrapped.split('\n');
     }
 }

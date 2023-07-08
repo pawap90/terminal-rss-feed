@@ -14,21 +14,22 @@ export class EntryReadUI {
 
     constructor(entry: Entry) {
         this.entry = entry;
-        this.screenSize = { columns: process.stdout.columns, rows: process.stdout.rows };
+        this.screenSize = { columns: process.stdout.columns, rows: process.stdout.rows }; 
     }
 
     async load() {
         this.scrollableContent = new Scrollable({
-            content: this.formatContent()
+            content: this.formatContent(),
+            wrapOptions: { trim: true }
         });
 
         controller
-            .on('backspace', async () => {
+            .on('b', async () => {
                 controller.clear(); // Clear commands so the entry UI can add its own.
                 await new EntryListUI().load();
             })
-            .on('up', () => this.scrollableContent?.scroll(-1))
-            .on('down', () => this.scrollableContent?.scroll(1));
+            .on('up', () => this.scrollableContent?.scroll(-1).print())
+            .on('down', () => this.scrollableContent?.scroll(1).print());
 
         console.clear();
         this.print();
@@ -50,7 +51,7 @@ export class EntryReadUI {
 
         const headerTable = table([[metadata]], {
             border: getBorderCharacters('norc'),
-            columnDefault: { width: this.screenSize.columns - 2},
+            columnDefault: { width: this.screenSize.columns - 2 },
             header: { content: header, alignment: 'center' },
             drawHorizontalLine: () => true,
             drawVerticalLine: () => false
@@ -63,9 +64,16 @@ export class EntryReadUI {
             ?.setStart({ x: 0, y: cursorY })
             .setContainer({
                 width: this.screenSize.columns - 2,
-                height: this.screenSize.rows - cursorY
+                height: this.screenSize.rows - cursorY - 2
             })
             .print();
+        this.printFooter();
+    }
+
+    private printFooter() {
+        let footer = 'Scroll: [↑] [↓] | Go back [B]';
+        process.stdout.cursorTo(this.screenSize.columns - footer.length, this.screenSize.rows - 2);
+        process.stdout.write(color.blue(footer));
     }
 
     private sliceTextToFit(text: string) {

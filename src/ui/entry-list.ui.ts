@@ -18,11 +18,9 @@ export class EntryListUI {
     private readonly entryTableHeaderHeight = 3;
     private readonly entryTableFooterHeight = 3;
 
-    constructor() {
-        this.screenSize = { columns: process.stdout.columns, rows: process.stdout.rows };
-    }
-
     async load(): Promise<void> {
+        this.screenSize = { columns: process.stdout.columns, rows: process.stdout.rows };
+
         // TODO: RSS CRUDL
         //const rssUrl = 'https://blog.paulasantamaria.com/rss.xml'; // Hashnode
         const rssUrl = 'https://dev.to/feed/paulasantamaria'; // Dev.to
@@ -35,12 +33,8 @@ export class EntryListUI {
         this.totalPages = Math.ceil(this.entries.length / this.entriesPerPage);
 
         controller
-            .on('up', () => {
-                this.move('up');
-            })
-            .on('down', () => {
-                this.move('down');
-            })
+            .on('up', () => this.move('up'))
+            .on('down', () => this.move('down'))
             .on('return', async () => {
                 controller.clear(); // Clear commands so the entry UI can add its own.
                 await new EntryReadUI(this.entries[this.selectedEntryIndex]).load();
@@ -69,7 +63,7 @@ export class EntryListUI {
             table(tableData, {
                 border: getBorderCharacters('norc'),
                 header: { content: color.pink.inverse(' MY FEED ') },
-                columns: { 0: { width: 1 }, 1: { width: this.screenSize.columns - 8 } },
+                columns: { 0: { width: 1 }, 1: { width: this.screenSize.columns - 5 } },
                 drawHorizontalLine: () => true,
                 drawVerticalLine: () => false
             })
@@ -91,10 +85,20 @@ export class EntryListUI {
 
     private printFooter() {
         let footer = `Page ${this.currentPage + 1} of ${this.totalPages}`;
-        footer += ` | ${this.entries.length} entries`;
-        footer += ` | ${this.selectedEntryIndex} selected`;
+        footer += ` | ${this.entries.length} entries\n`;
+        let controls = ` Select: [↑] [↓] | Read: [Enter]`;
 
-        console.log(footer);
+        process.stdout.cursorTo(
+            this.screenSize.columns - footer.length + 1,
+            this.screenSize.rows - 3
+        );
+        process.stdout.write(footer);
+
+        process.stdout.cursorTo(
+            this.screenSize.columns - controls.length,
+            this.screenSize.rows - 2
+        );
+        process.stdout.write(color.blue(controls));
     }
 
     private sliceTextToFit(text: string) {

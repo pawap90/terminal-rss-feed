@@ -69,6 +69,7 @@ export class EntryListUI {
             table(tableData, {
                 border: getBorderCharacters('norc'),
                 header: { content: color.pink.inverse(' MY FEED ') },
+                columns: { 0: { width: 1 }, 1: { width: this.screenSize.columns - 8 } },
                 drawHorizontalLine: () => true,
                 drawVerticalLine: () => false
             })

@@ -1,11 +1,11 @@
-import { controller } from '../controller.js';
+import { controller } from '../utils/controller.js';
 import { Entry } from '../services/rss.service.js';
 import { EntryListUI } from './entry-list.ui.js';
-import { color, theme } from './color.js';
+import { color, theme } from '../utils/color.js';
 
 import { getBorderCharacters, table } from 'table';
 import cliHtml from 'cli-html';
-import { Scrollable } from './scrollable.js';
+import { Scrollable } from '../utils/scrollable.js';
 
 export class EntryReadUI {
     private readonly entry: Entry;

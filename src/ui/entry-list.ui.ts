@@ -1,8 +1,8 @@
-import { controller } from '../controller.js';
+import { controller } from '../utils/controller.js';
 import { getFeed, type Entry } from '../services/rss.service.js';
 import { getBorderCharacters, table } from 'table';
 import { EntryReadUI } from './entry-read.ui.js';
-import { color } from './color.js';
+import { color } from '../utils/color.js';
 
 export class EntryListUI {
     private entries: Entry[] = [];

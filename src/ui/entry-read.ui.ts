@@ -29,7 +29,8 @@ export class EntryReadUI {
                 await new EntryListUI().load();
             })
             .on('up', () => this.scrollableContent?.scroll(-1).print())
-            .on('down', () => this.scrollableContent?.scroll(1).print());
+            .on('down', () => this.scrollableContent?.scroll(1).print())
+            .on('r', () => this.load());
 
         console.clear();
         this.print();

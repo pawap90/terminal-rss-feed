@@ -7,6 +7,7 @@ import { color } from './color.js';
 export class EntryListUI {
     private entries: Entry[] = [];
     private selectedIndex = 0;
+    private selectedEntryIndex = 0;
     private currentPage = 0;
 
     private totalPages = 0;
@@ -42,7 +43,7 @@ export class EntryListUI {
             })
             .on('return', async () => {
                 controller.clear(); // Clear commands so the entry UI can add its own.
-                await new EntryReadUI(this.entries[this.selectedIndex * (this.currentPage + 1)]).load();
+                await new EntryReadUI(this.entries[this.selectedEntryIndex]).load();
             });
 
         console.clear();
@@ -90,7 +91,7 @@ export class EntryListUI {
     private printFooter() {
         let footer = `Page ${this.currentPage + 1} of ${this.totalPages}`;
         footer += ` | ${this.entries.length} entries`;
-        footer += ` | ${this.selectedIndex} selected`;
+        footer += ` | ${this.selectedEntryIndex} selected`;
 
         console.log(footer);
     }
@@ -116,6 +117,7 @@ export class EntryListUI {
             }
         }
 
+        this.selectedEntryIndex = this.currentPage * this.entriesPerPage + this.selectedIndex;
         this.print();
     }
 

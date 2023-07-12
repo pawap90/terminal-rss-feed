@@ -1,6 +1,6 @@
 Read your favorite blogs on the terminal 📄 [WIP]
 
-![rssreader](https://github.com/pawap90/terminal-rss-feed/assets/2507959/d4314cb4-5b66-4653-8615-71fc3dd705d3)
+![rssreader](https://github.com/pawap90/terminal-rss-feed/assets/2507959/f036aae5-49e5-41cf-bb6e-44903f08a10f)
 
 > It's only showing my own blog currently, for testing purposes. I'll add a way to add your own RSS feeds soon.
 

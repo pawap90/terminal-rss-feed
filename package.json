@@ -33,6 +33,7 @@
         "cli-html": "github:pawap90/cli-html#add-options",
         "file-system-cache": "^2.4.1",
         "rss-parser": "^3.13.0",
+        "scrollable-cli": "^1.0.1",
         "table": "^6.8.1",
         "wrap-ansi": "^8.1.0"
     }

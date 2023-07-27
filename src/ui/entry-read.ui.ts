@@ -5,7 +5,7 @@ import { color, theme } from '../utils/color.js';
 
 import { getBorderCharacters, table } from 'table';
 import cliHtml from 'cli-html';
-import { Scrollable } from '../utils/scrollable.js';
+import { Scrollable } from 'scrollable-cli';
 
 export class EntryReadUI {
     private readonly entry: Entry;
@@ -63,11 +63,11 @@ export class EntryReadUI {
         const cursorY = headerTable.split('\n').length - 1;
         this.scrollableContent
             ?.setStart({ x: 0, y: cursorY })
-            .setContainer({
+            .setSize({
                 width: this.screenSize.columns - 2,
                 height: this.screenSize.rows - cursorY - 2
             })
-            .print();
+            .print(); 
         this.printFooter();
     }
 

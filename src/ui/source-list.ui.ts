@@ -53,7 +53,8 @@ export class SourceListUI {
                 this.sourceToString(currentPageSources[i])
             ]);
 
-        if (this.sources.length == 0) tableData.push(['', color.pink('No sources found. Add one with [A]')]);
+        if (this.sources.length == 0)
+            tableData.push(['', color.pink('No sources found. Add one with [A]')]);
 
         console.clear();
         console.log(
@@ -71,9 +72,8 @@ export class SourceListUI {
     }
 
     private sourceToString(source: UserFeed) {
-        return `${color[source.color ?? 'white']('██')} ${source.title}\n${color.green(
-            source.url
-        )}`;
+        const sourceColor = color[source.color ?? 'white'];
+        return `${sourceColor('██')} ${source.title}\n${sourceColor(source.url)}`;
     }
 
     private printFooter() {

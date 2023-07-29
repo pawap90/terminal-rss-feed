@@ -24,6 +24,8 @@ export class CacheService {
 
         const record = value as CacheRecord<T>;
 
+        if(!record.expiration) return { success: true, record };
+
         if (record.expiration && new Date(record.expiration).getTime() > Date.now()) {
             return { success: true, record };
         }

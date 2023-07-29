@@ -1,9 +1,10 @@
-import { getBorderCharacters, table } from "table";
-import { type UserFeed, getUserFeeds } from "../services/feed.service.js";
-import { controller } from "../utils/controller.js";
-import { color } from "../utils/color.js";
+import { getBorderCharacters, table } from 'table';
+import { type UserFeed, getUserFeeds } from '../services/feed.service.js';
+import { controller } from '../utils/controller.js';
+import { color } from '../utils/color.js';
+import { SourceAddUI } from './source-add.ui.js';
 
-export class FeedListUI {
+export class SourceListUI {
     private sources: UserFeed[] = [];
     private selectedIndex = 0;
     private currentPage = 0;
@@ -19,12 +20,7 @@ export class FeedListUI {
     async load(): Promise<void> {
         this.screenSize = { columns: process.stdout.columns, rows: process.stdout.rows };
 
-        //this.sources = await getUserFeeds();
-        // mock for now
-        this.sources = [
-            { id: 1, url: 'https://blog.paulasantamaria.com/rss.xml', title: 'Hashnode' },
-            { id: 2, url: 'https://dev.to/feed/paulasantamaria', title: 'Dev.to' }
-        ];
+        this.sources = await getUserFeeds();
 
         this.itemsPerPage = Math.floor(
             (this.screenSize.rows - (this.HEADER_HEIGHT + this.FOOTER_HEIGHT)) / this.ROW_HEIGHT
@@ -34,9 +30,12 @@ export class FeedListUI {
         controller
             .on('up', () => this.move('up'))
             .on('down', () => this.move('down'))
+            .on('a', async () => { 
+                controller.clear();
+                await new SourceAddUI().load();
+            })
             .on('r', () => this.load());
 
-        console.clear();
         this.print();
     }
 
@@ -70,7 +69,7 @@ export class FeedListUI {
     }
 
     private sourceToString(source: UserFeed) {
-        return `${color.yellow(source.title)}\n${color.green(source.url)}`;
+        return `${color[source.color ?? 'white']('██')} ${source.title}\n${color.green(source.url)}`;
     }
 
     private printFooter() {

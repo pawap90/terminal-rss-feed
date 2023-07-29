@@ -1,11 +1,12 @@
 import { getFeedMetadata } from './rss.service.js';
 import { CacheService } from './cache.service.js';
+import { ColorKey } from '../utils/color.js';
 
 export type UserFeed = {
     id: number;
     url: string;
     title: string;
-    color?: string;
+    color?: ColorKey;
 };
 
 const cacheService = new CacheService();
@@ -17,7 +18,7 @@ export async function getUserFeeds() {
     return cacheResult.success ? cacheResult.record.data : [];
 }
 
-export async function saveUserFeed(url: string, title?: string, color?: string): Promise<void> {
+export async function saveUserFeed(url: string, title?: string, color?: ColorKey): Promise<void> {
     if (title == undefined) {
         const metadata = await getFeedMetadata(url);
         title = metadata.title ?? 'TITLE NOT FOUND';

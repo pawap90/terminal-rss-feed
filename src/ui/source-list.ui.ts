@@ -1,5 +1,5 @@
 import { getBorderCharacters, table } from 'table';
-import { type UserFeed, getUserFeeds } from '../services/feed.service.js';
+import { type UserFeed, getUserFeeds, removeUserFeed } from '../services/feed.service.js';
 import { controller } from '../utils/controller.js';
 import { color } from '../utils/color.js';
 import { SourceAddUI } from './source-add.ui.js';
@@ -20,12 +20,7 @@ export class SourceListUI {
     async load(): Promise<void> {
         this.screenSize = { columns: process.stdout.columns, rows: process.stdout.rows };
 
-        this.sources = await getUserFeeds();
-
-        this.itemsPerPage = Math.floor(
-            (this.screenSize.rows - (this.HEADER_HEIGHT + this.FOOTER_HEIGHT)) / this.ROW_HEIGHT
-        );
-        this.totalPages = Math.ceil(this.sources.length / this.itemsPerPage);
+        await this.initializeTable();
 
         controller
             .on('up', () => this.move('up'))
@@ -34,9 +29,25 @@ export class SourceListUI {
                 controller.clear();
                 await new SourceAddUI().load();
             })
+            .on('delete', async () => {
+                const index = this.currentPage * this.itemsPerPage + this.selectedIndex;
+                await removeUserFeed(this.sources[index].id);
+                await this.initializeTable();
+                this.print();
+            })
             .on('r', () => this.load());
 
         this.print();
+    }
+
+    private async initializeTable() {
+        this.selectedIndex = 0;
+        this.sources = await getUserFeeds();
+
+        this.itemsPerPage = Math.floor(
+            (this.screenSize.rows - (this.HEADER_HEIGHT + this.FOOTER_HEIGHT)) / this.ROW_HEIGHT
+        );
+        this.totalPages = Math.ceil(this.sources.length / this.itemsPerPage);
     }
 
     private print() {

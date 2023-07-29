@@ -12,12 +12,16 @@ const colors = {
     white: '#f0f6e8'
 };
 
+export type ColorKey = keyof typeof color;
+
 export const color: Record<keyof typeof colors, ChalkInstance> = Object.assign(
     {},
     ...Object.entries(colors).map(([key, value]) => {
         return { [key]: chalk.hex(value) };
     })
 );
+
+export const colorKeys = Object.keys(colors) as (keyof typeof colors)[];
 
 const colorString: Record<keyof typeof colors, { fg: string; bg: string }> = Object.assign(
     {},

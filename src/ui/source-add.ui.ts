@@ -1,10 +1,9 @@
-import inquirer from "inquirer";
-import { saveUserFeed } from "../services/feed.service.js";
-import { color, colorKeys } from "../utils/color.js";
-import clipboardy from "clipboardy";
-import { SourceListUI } from "./source-list.ui.js";
-import { controller } from "../utils/controller.js";
-import { emitKeypressEvents } from "node:readline";
+import inquirer from 'inquirer';
+import { saveUserFeed } from '../services/feed.service.js';
+import { color, colorKeys } from '../utils/color.js';
+import clipboardy from 'clipboardy';
+import { SourceListUI } from './source-list.ui.js';
+import { controller } from '../utils/controller.js';
 
 export class SourceAddUI {
     private screenSize = { columns: 0, rows: 0 };
@@ -22,19 +21,19 @@ export class SourceAddUI {
         await this.prompt();
 
         process.stdin.resume();
+        controller.build();
 
         await new SourceListUI().load();
     }
 
     private async prompt() {
-        // Print header 
+        // Print header
         process.stdout.cursorTo(0, this.HEADER_HEIGHT);
 
         const clipboardContent = await clipboardy.read();
         let clipboardUrl = '';
-        if (this.isUrl(clipboardContent)) 
-            clipboardUrl = clipboardContent; 
-        
+        if (this.isUrl(clipboardContent)) clipboardUrl = clipboardContent;
+
         const newRssAnswers = await inquirer.prompt([
             {
                 type: 'confirm',
@@ -46,7 +45,8 @@ export class SourceAddUI {
                 type: 'input',
                 name: 'url',
                 message: (answers: any) => {
-                    if (clipboardUrl.length > 0) return `Press enter to use the URL from your clipboard or enter a new one:`;
+                    if (clipboardUrl.length > 0)
+                        return `Press enter to use the URL from your clipboard or enter a new one:`;
                     return 'Enter the URL of the RSS feed:';
                 },
                 default: clipboardUrl.length > 0 ? clipboardUrl : undefined,
@@ -81,8 +81,10 @@ export class SourceAddUI {
         const title = ' ADD SOURCE ';
         console.log(
             fullWidthLine +
-            `\n${' '.repeat(this.screenSize.columns / 2 - title.length / 2)}${color.yellow.inverse(title)}\n` +
-            fullWidthLine
+                `\n${' '.repeat(
+                    this.screenSize.columns / 2 - title.length / 2
+                )}${color.yellow.inverse(title)}\n` +
+                fullWidthLine
         );
     }
 

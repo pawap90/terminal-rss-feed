@@ -19,7 +19,7 @@ export async function getUserFeeds() {
 }
 
 export async function saveUserFeed(url: string, title?: string, color?: ColorKey): Promise<void> {
-    if (title == undefined) {
+    if (!title) {
         const metadata = await getFeedMetadata(url);
         title = metadata.title ?? 'TITLE NOT FOUND';
     }

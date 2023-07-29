@@ -30,7 +30,7 @@ export class SourceListUI {
         controller
             .on('up', () => this.move('up'))
             .on('down', () => this.move('down'))
-            .on('a', async () => { 
+            .on('a', async () => {
                 controller.clear();
                 await new SourceAddUI().load();
             })
@@ -53,6 +53,8 @@ export class SourceListUI {
                 this.sourceToString(currentPageSources[i])
             ]);
 
+        if (this.sources.length == 0) tableData.push(['', color.pink('No sources found. Add one with [A]')]);
+
         console.clear();
         console.log(
             table(tableData, {
@@ -69,7 +71,9 @@ export class SourceListUI {
     }
 
     private sourceToString(source: UserFeed) {
-        return `${color[source.color ?? 'white']('██')} ${source.title}\n${color.green(source.url)}`;
+        return `${color[source.color ?? 'white']('██')} ${source.title}\n${color.green(
+            source.url
+        )}`;
     }
 
     private printFooter() {

@@ -49,3 +49,12 @@ export async function getFeed(url: string): Promise<Feed> {
 
     return feed;
 }
+
+export async function getFeedMetadata(url: string): Promise<Feed> {
+    const feedResult = await parser.parseURL(url);
+    return {
+        title: feedResult.title,
+        url: url,
+        entries: []
+    };
+}
